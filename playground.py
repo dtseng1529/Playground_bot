@@ -7,11 +7,12 @@ from itertools import cycle
 
 client = commands.Bot(command_prefix = '~')
 status = cycle(['with the ground...get it? playground?', 'league, aka losing lp', 'development testing'])
+OH = False
 
 @client.event #on ready + status + change status loop
 async def on_ready():
-    #await client.change_presence(status=discord.Status.dnd, activity=discord.Game('with the ground...get it? playground?'))
-    change_status.start()
+    await client.change_presence(status=discord.Status.dnd, activity=discord.Game('with the ground...get it? playground?'))
+    #change_status.start()
     print('bot is ready')
 
 @client.event #notify join
@@ -91,11 +92,31 @@ def is_it_me(ctx): #check my id
 @client.command() #example custom check
 @commands.check(is_it_me)
 async def example_custom_check(ctx):
-    await ctx.send(f'Hi I'm {ctx.author}')
+    await ctx.send(f'Hi Im {ctx.author}')
+
+def OH_true():
+    return OH
+    
+@client.command(aliases=['start'])
+@commands.check(!OH_true)
+async def startOH():
+    client.load_extension('cogs.OH')
+    OH = True
+    
+@client.command(aliases=['stop'])
+@commands.check(OH_true)
+async def stopOH():
+    client.unload_extension('cogs.OH')
+    OH = False
+    
+
+        
 
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         client.load_extension(f'cogs.{filename[:-3]}')
+        
+client.unload_extension('cogs.OH')
 
 client.run('NzIxOTMxNTc5MzYxOTg0NTIy.XxHhPw.8uE5QjhHxQF2SM2s9WBqeErF8dk')
